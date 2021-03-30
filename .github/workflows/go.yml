@@ -22,7 +22,8 @@ jobs:
       run: go test -v
       
     - name: Build
-      run: CGO_ENABLED=0 GOOS=linux GOARCH=linux go build -v -a -o release/server
+      run: CGO_ENABLED=0 go build -v -a -o release/server
+      # run: CGO_ENABLED=0 GOOS=linux GOARCH=linux go build -v -a -o release/server
 
     - name: Publish to Registry
       uses: elgohr/Publish-Docker-Github-Action@2.9
