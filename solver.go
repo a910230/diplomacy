@@ -11,7 +11,7 @@ func main() {
 	http.HandleFunc("/", handler)
 
 	// Start a web server.
-	http.ListenAndServe(":80", nil)
+	http.ListenAndServeTLS(":443", "/etc/letsencrypt/live/diplomacy.guru/cert.pem", "/etc/letsencrypt/live/diplomacy.guru/privkey.pem", nil)
 }
 
 // The handler for the root path.
