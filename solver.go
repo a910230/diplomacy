@@ -11,7 +11,7 @@ func main() {
 	http.HandleFunc("/", handler)
 
 	// Start a web server.
-	http.ListenAndServe(":8080", nil)
+	http.ListenAndServe(":80", nil)
 }
 
 // The handler for the root path.
