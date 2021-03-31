@@ -1,0 +1,1 @@
+ps -aux | grep "./server" | grep -v grep | grep -v sudo | tr -s ' ' | cut -d ' ' -f 2 | xargs sudo kill -9
