@@ -11,13 +11,16 @@ import (
 )
 
 func main() {
-	mux := http.NewServeMux()
-	mux.HandleFunc("/solver", solverHandler)
-	mux.HandleFunc("/game", gameHandler)
+	// mux := http.NewServeMux()
+	// mux.HandleFunc("/solver", solverHandler)
+	// mux.HandleFunc("/game", gameHandler)
+	http.HandleFunc("/solver", solverHandler)
+	http.HandleFunc("/game", gameHandler)
 
 	// Start a web server.
 	go http.ListenAndServe(":80", http.HandlerFunc(redirect))
-	http.ListenAndServeTLS(":443", "/etc/letsencrypt/live/diplomacy.guru/cert.pem", "/etc/letsencrypt/live/diplomacy.guru/privkey.pem", mux)
+	// http.ListenAndServeTLS(":443", "/etc/letsencrypt/live/diplomacy.guru/cert.pem", "/etc/letsencrypt/live/diplomacy.guru/privkey.pem", mux)
+	http.ListenAndServeTLS(":443", "/etc/letsencrypt/live/diplomacy.guru/cert.pem", "/etc/letsencrypt/live/diplomacy.guru/privkey.pem", nil)
 }
 
 func redirect(w http.ResponseWriter, req *http.Request) {
