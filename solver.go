@@ -11,16 +11,14 @@ import (
 )
 
 func main() {
-	// mux := http.NewServeMux()
-	// mux.HandleFunc("/solver", solverHandler)
-	// mux.HandleFunc("/game", gameHandler)
-	http.HandleFunc("/solver", solverHandler)
-	http.HandleFunc("/game", gameHandler)
+	mux := http.NewServeMux()
+	mux.HandleFunc("/solver", solverHandler)
+	mux.HandleFunc("/game", gameHandler)
+	mux.HandleFunc("/", indexHandler)
 
 	// Start a web server.
 	go http.ListenAndServe(":80", http.HandlerFunc(redirect))
-	// http.ListenAndServeTLS(":443", "/etc/letsencrypt/live/diplomacy.guru/cert.pem", "/etc/letsencrypt/live/diplomacy.guru/privkey.pem", mux)
-	http.ListenAndServeTLS(":443", "/etc/letsencrypt/live/diplomacy.guru/cert.pem", "/etc/letsencrypt/live/diplomacy.guru/privkey.pem", nil)
+	http.ListenAndServeTLS(":443", "/etc/letsencrypt/live/diplomacy.guru/cert.pem", "/etc/letsencrypt/live/diplomacy.guru/privkey.pem", mux)
 }
 
 func redirect(w http.ResponseWriter, req *http.Request) {
@@ -61,5 +59,9 @@ func solverHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func gameHandler(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "/game/game.html")
+	http.ServeFile(w, r, "game/game.html")
+}
+
+func indexHandler(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, "index.html")
 }
