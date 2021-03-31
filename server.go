@@ -15,7 +15,7 @@ func main() {
 	mux.HandleFunc("/solver", solverHandler)
 	// mux.Handle("/game", http.FileServer(http.Dir("game")))
 	mux.HandleFunc("/game", gameHandler)
-	mux.HandleFunc("/game/map.svg", mapHandler)
+	// mux.HandleFunc("/game/map.svg", mapHandler)
 	mux.HandleFunc("/map.svg", mapHandler)
 	// mux.HandleFunc("/", indexHandler)
 
