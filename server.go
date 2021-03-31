@@ -59,9 +59,9 @@ func solverHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func gameHandler(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "/home/ubuntu/diplomacy-server/game/game.html")
+	http.ServeFile(w, r, "game/game.html")
 }
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "/home/ubuntu/diplomacy-server/index.html")
+	http.ServeFile(w, r, "index.html")
 }
