@@ -1,19 +1,24 @@
 package main
 
 import (
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
 func main() {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/", handler)
 	// Listen to the root path of the web app
-	http.HandleFunc("/", handler)
+	// http.HandleFunc("/", handler)
 
 	// Start a web server.
 	go http.ListenAndServe(":80", http.HandlerFunc(redirect))
-	http.ListenAndServeTLS(":443", "/etc/letsencrypt/live/diplomacy.guru/cert.pem", "/etc/letsencrypt/live/diplomacy.guru/privkey.pem", nil)
+	http.ListenAndServeTLS(":443", "/etc/letsencrypt/live/diplomacy.guru/cert.pem", "/etc/letsencrypt/live/diplomacy.guru/privkey.pem", mux)
 }
 
 // The handler for the root path.
@@ -38,4 +43,16 @@ func redirect(w http.ResponseWriter, req *http.Request) {
 	}
 	log.Printf("redirect to: %s", target)
 	http.Redirect(w, req, target, http.StatusTemporaryRedirect)
+}
+
+func connectDB() {
+	_, err := sql.Open("mysql", "username:password@tcp(diplomacy.c6kpxx0eowrf.us-east-2.rds.amazonaws.com:3306)?charset=utf8")
+	check(err)
+
+}
+
+func check(e error) {
+	if e != nil {
+		panic(e)
+	}
 }
