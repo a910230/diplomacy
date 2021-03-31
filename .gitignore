@@ -1,0 +1,7 @@
+go.mod
+go.sum
+server
+server.log
+go
+stop
+update

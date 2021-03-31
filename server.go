@@ -13,12 +13,10 @@ import (
 func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/solver", solverHandler)
-	// mux.Handle("/game", http.FileServer(http.Dir("game")))
-	mux.HandleFunc("/game", fh("game/game.html"))
-	mux.HandleFunc("/map.svg", fh("game/map.svg"))
-	mux.HandleFunc("/game.js", fh("game/game.js"))
-	mux.HandleFunc("/bg.png", fh("game/bg.png"))
-	// mux.HandleFunc("/", indexHandler)
+	mux.Handle("/game", fh("game/game.html"))
+	mux.Handle("/map.svg", fh("game/map.svg"))
+	mux.Handle("/game.js", fh("game/game.js"))
+	mux.Handle("/bg.png", fh("game/bg.png"))
 
 	// Start a web server.
 	go http.ListenAndServe(":80", http.HandlerFunc(redirect))
@@ -47,7 +45,6 @@ func check(e error) {
 	}
 }
 
-// The handler for the root path.
 func solverHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Add("Access-Control-Allow-Headers", "Content-Type")
@@ -62,28 +59,9 @@ func solverHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func gameHandler(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "game/game.html")
-}
-
-func mapHandler(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "game/map.svg")
-}
-
-func indexHandler(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "index.html")
-}
-
-// type fileHandler struct {
-// 	file string
-// }
-
-// func (f *fileHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-// 	http.ServeFile(w, r, f.file)
-// }
-
-func fh(filename string) func(http.ResponseWriter, *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
+func fh(filename string) http.Handler {
+	f := func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, filename)
 	}
+	return http.HandlerFunc(f)
 }
