@@ -442,7 +442,7 @@ function sendOrders() {
             document.getElementById("result").innerHTML += xmlhttp.responseText;
         }
     }
-    xmlhttp.open("POST", "https://diplomacy.guru/", true);
+    xmlhttp.open("POST", "https://diplomacy.guru/solver", true);
     xmlhttp.setRequestHeader("Content-type", "application/json;charset=utf-8");
     xmlhttp.send(JSON.stringify(ret));
 }
