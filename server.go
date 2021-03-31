@@ -14,9 +14,8 @@ func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/solver", solverHandler)
 	// mux.Handle("/game", http.FileServer(http.Dir("game")))
-	mux.HandleFunc("/game", gameHandler)
-	mux.HandleFunc("/game/map.svg", mapHandler)
-	// mux.HandleFunc("/map.svg", mapHandler)
+	mux.HandleFunc("/game", fh("game/game.html"))
+	mux.HandleFunc("/map.svg", fh("game/map.svg"))
 	// mux.HandleFunc("/", indexHandler)
 
 	// Start a web server.
@@ -62,7 +61,7 @@ func solverHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func gameHandler(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "game/index.html")
+	http.ServeFile(w, r, "game/game.html")
 }
 
 func mapHandler(w http.ResponseWriter, r *http.Request) {
@@ -71,4 +70,18 @@ func mapHandler(w http.ResponseWriter, r *http.Request) {
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "index.html")
+}
+
+// type fileHandler struct {
+// 	file string
+// }
+
+// func (f *fileHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+// 	http.ServeFile(w, r, f.file)
+// }
+
+func fh(filename string) func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, filename)
+	}
 }
