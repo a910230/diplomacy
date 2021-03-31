@@ -27,11 +27,12 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Access-Control-Allow-Headers", "Content-Type")
 	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 
-	fmt.Fprintln(w, "Hello, World")
 	var orders [][]string
 	json.NewDecoder(r.Body).Decode(&orders)
 	if orders != nil {
 		fmt.Fprintln(w, orders)
+	} else {
+		fmt.Fprintln(w, "Hello, World")
 	}
 }
 
