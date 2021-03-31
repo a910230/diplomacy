@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style type="text/css">
+#bg, #map {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    width: 800px;
+    height: 697px;
+}
+</style>
+<script src="game.js"></script>
+</head>
+ 
+<body>
+    <div style="position:relative;width:800px;height:697px;">
+        <img id="bg" src="bg.png" style="position:absolute;z-index:0;"/>
+        <embed id="map" role="rus" status="wait" src="map.svg" type="image/svg+xml" />
+        <div id="menu" style="background-color:seagreen;width:fit-content;visibility:hidden;position:absolute;z-index:3;">
+            <div style="overflow:auto;">
+                <div style="float:left;"></div>
+                <div style="float:right;"></div>
+            </div>
+            <div></div>
+        </div>        
+    </div>
+    
+    <form>
+        Your role: <output id="role">Rus</output><br/>
+        Your orders:<br/>
+        <output id="orders"></output>
+        <div><button type="button" onclick="sendOrders()">送出</button></div>
+    </form>
+    <p id="result"></p>
+    
+</body>
+</html>
