@@ -15,6 +15,8 @@ func main() {
 	mux.HandleFunc("/solver", solverHandler)
 	// mux.Handle("/game", http.FileServer(http.Dir("game")))
 	mux.HandleFunc("/game", gameHandler)
+	mux.HandleFunc("/game/map.svg", mapHandler)
+	mux.HandleFunc("/map.svg", mapHandler)
 	// mux.HandleFunc("/", indexHandler)
 
 	// Start a web server.
@@ -61,6 +63,10 @@ func solverHandler(w http.ResponseWriter, r *http.Request) {
 
 func gameHandler(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "game/index.html")
+}
+
+func mapHandler(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, "game/map.svg")
 }
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
