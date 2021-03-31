@@ -13,8 +13,8 @@ import (
 func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/solver", solverHandler)
-	mux.Handle("/game", http.FileServer(http.Dir("game")))
-	// mux.HandleFunc("/game", gameHandler)
+	// mux.Handle("/game", http.FileServer(http.Dir("game")))
+	mux.HandleFunc("/game", gameHandler)
 	// mux.HandleFunc("/", indexHandler)
 
 	// Start a web server.
