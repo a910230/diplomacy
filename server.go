@@ -16,6 +16,8 @@ func main() {
 	// mux.Handle("/game", http.FileServer(http.Dir("game")))
 	mux.HandleFunc("/game", fh("game/game.html"))
 	mux.HandleFunc("/map.svg", fh("game/map.svg"))
+	mux.HandleFunc("/game.js", fh("game/game.js"))
+	mux.HandleFunc("/bg.png", fh("game/bg.png"))
 	// mux.HandleFunc("/", indexHandler)
 
 	// Start a web server.
