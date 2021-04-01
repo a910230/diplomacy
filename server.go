@@ -11,15 +11,8 @@ import (
 )
 
 func main() {
-	indexHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if len(r.URL.Path) == 1 {
-		} else {
-			http.Redirect(w, r, "/404", http.StatusTemporaryRedirect)
-		}
-		fmt.Fprintln(w, "This is index page.")
-	})
 	mux := http.NewServeMux()
-	mux.Handle("/", indexHandler)
+	mux.HandleFunc("/", index)
 	mux.HandleFunc("/solver", solver)
 	mux.Handle("/game", fileHandler("game/game.html"))
 	mux.Handle("/res/", http.StripPrefix("/res/", http.FileServer(http.Dir("res"))))
@@ -50,6 +43,14 @@ func connectDB() {
 func check(e error) {
 	if e != nil {
 		panic(e)
+	}
+}
+
+func index(w http.ResponseWriter, r *http.Request) {
+	if len(r.URL.Path) == 1 {
+		http.ServeFile(w, r, "index.html")
+	} else {
+		http.Redirect(w, r, "/404", http.StatusTemporaryRedirect)
 	}
 }
 
