@@ -14,9 +14,6 @@ func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/solver", solverHandler)
 	mux.Handle("/game", fh("game/game.html"))
-	// mux.Handle("/map.svg", fh("game/map.svg"))
-	// mux.Handle("/game.js", fh("game/game.js"))
-	// mux.Handle("/bg.png", fh("game/bg.png"))
 	mux.Handle("/res/", http.StripPrefix("/res/", http.FileServer(http.Dir("res"))))
 
 	// Start a web server.
