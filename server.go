@@ -16,7 +16,7 @@ func main() {
 		} else {
 			http.Redirect(w, r, "/404", http.StatusTemporaryRedirect)
 		}
-		fmt.Fprintln(w, r.URL.Path)
+		fmt.Fprintln(w, "This is index page.")
 	})
 	mux := http.NewServeMux()
 	mux.Handle("/", indexHandler)
@@ -24,6 +24,7 @@ func main() {
 	mux.Handle("/game", fileHandler("game/game.html"))
 	mux.Handle("/res/", http.StripPrefix("/res/", http.FileServer(http.Dir("res"))))
 	mux.HandleFunc("/403", func(w http.ResponseWriter, r *http.Request) { http.Error(w, "403 forbidden", 403) })
+	mux.HandleFunc("/404", func(w http.ResponseWriter, r *http.Request) { http.Error(w, "404 not found", 404) })
 
 	// Start a web server.
 	go http.ListenAndServe(":80", http.HandlerFunc(redirect))
