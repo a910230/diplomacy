@@ -13,7 +13,7 @@ import (
 func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/solver", solverHandler)
-	mux.Handle("/game", fh("game/game.html"))
+	mux.Handle("/game", fileHandler("game/game.html"))
 	mux.Handle("/res/", http.StripPrefix("/res/", http.FileServer(http.Dir("res"))))
 
 	// Start a web server.
@@ -57,7 +57,7 @@ func solverHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func fh(filename string) http.Handler {
+func fileHandler(filename string) http.Handler {
 	f := func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, filename)
 	}
