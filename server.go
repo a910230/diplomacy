@@ -11,11 +11,15 @@ import (
 )
 
 func main() {
+	indexHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintln(w, r.URL.Path)
+	})
 	mux := http.NewServeMux()
-	mux.HandleFunc("/solver", solverHandler)
+	mux.Handle("/", indexHandler)
+	mux.HandleFunc("/solver", solver)
 	mux.Handle("/game", fileHandler("game/game.html"))
 	mux.Handle("/res/", http.StripPrefix("/res/", http.FileServer(http.Dir("res"))))
-	mux.Handle("/403", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { http.Error(w, "403 forbidden", 403) }))
+	mux.HandleFunc("/403", func(w http.ResponseWriter, r *http.Request) { http.Error(w, "403 forbidden", 403) })
 
 	// Start a web server.
 	go http.ListenAndServe(":80", http.HandlerFunc(redirect))
@@ -44,7 +48,7 @@ func check(e error) {
 	}
 }
 
-func solverHandler(w http.ResponseWriter, r *http.Request) {
+func solver(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Add("Access-Control-Allow-Headers", "Content-Type")
 	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
