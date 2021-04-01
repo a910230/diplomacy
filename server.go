@@ -15,7 +15,7 @@ func main() {
 	mux.HandleFunc("/solver", solverHandler)
 	mux.Handle("/game", fileHandler("game/game.html"))
 	mux.Handle("/res/", http.StripPrefix("/res/", http.FileServer(http.Dir("res"))))
-	mux.Handle("/403", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { http.Error(w, "", 403) }))
+	mux.Handle("/403", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { http.Error(w, "ABC", 403) }))
 
 	// Start a web server.
 	go http.ListenAndServe(":80", http.HandlerFunc(redirect))
