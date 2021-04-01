@@ -12,6 +12,10 @@ import (
 
 func main() {
 	indexHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if len(r.URL.Path) == 1 {
+		} else {
+			http.Redirect(w, r, "/404", http.StatusTemporaryRedirect)
+		}
 		fmt.Fprintln(w, r.URL.Path)
 	})
 	mux := http.NewServeMux()
@@ -26,14 +30,14 @@ func main() {
 	http.ListenAndServeTLS(":443", "/etc/letsencrypt/live/diplomacy.guru/cert.pem", "/etc/letsencrypt/live/diplomacy.guru/privkey.pem", mux)
 }
 
-func redirect(w http.ResponseWriter, req *http.Request) {
+func redirect(w http.ResponseWriter, r *http.Request) {
 	// remove/add not default ports from req.Host
-	target := "https://" + req.Host + req.URL.Path
-	if len(req.URL.RawQuery) > 0 {
-		target += "?" + req.URL.RawQuery
+	target := "https://" + r.Host + r.URL.Path
+	if len(r.URL.RawQuery) > 0 {
+		target += "?" + r.URL.RawQuery
 	}
 	log.Printf("redirect to: %s", target)
-	http.Redirect(w, req, target, http.StatusTemporaryRedirect)
+	http.Redirect(w, r, target, http.StatusTemporaryRedirect)
 }
 
 func connectDB() {
