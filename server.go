@@ -1,7 +1,6 @@
 package main
 
 import (
-	"database/sql"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -11,11 +10,12 @@ import (
 )
 
 func main() {
+	// Set router
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", index)
+	mux.Handle("/res/", http.StripPrefix("/res/", http.FileServer(http.Dir("res"))))
 	mux.HandleFunc("/solver", solver)
 	mux.Handle("/game", fileHandler("game/game.html"))
-	mux.Handle("/res/", http.StripPrefix("/res/", http.FileServer(http.Dir("res"))))
 	mux.HandleFunc("/403", func(w http.ResponseWriter, r *http.Request) { http.Error(w, "403 forbidden", 403) })
 	mux.HandleFunc("/404", func(w http.ResponseWriter, r *http.Request) { http.Error(w, "404 not found", 404) })
 
@@ -25,25 +25,12 @@ func main() {
 }
 
 func redirect(w http.ResponseWriter, r *http.Request) {
-	// remove/add not default ports from req.Host
 	target := "https://" + r.Host + r.URL.Path
 	if len(r.URL.RawQuery) > 0 {
 		target += "?" + r.URL.RawQuery
 	}
 	log.Printf("redirect to: %s", target)
 	http.Redirect(w, r, target, http.StatusTemporaryRedirect)
-}
-
-func connectDB() {
-	_, err := sql.Open("mysql", "username:password@tcp(diplomacy.c6kpxx0eowrf.us-east-2.rds.amazonaws.com:3306)?charset=utf8")
-	check(err)
-
-}
-
-func check(e error) {
-	if e != nil {
-		panic(e)
-	}
 }
 
 func index(w http.ResponseWriter, r *http.Request) {
