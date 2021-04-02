@@ -312,7 +312,7 @@ function prepare(text, n) {
             break;
         }
         case 3: { // text == "H", "spa", ...
-            order.getAttribute("obj3", text)
+            order.setAttribute("obj3", text)
             break;
         }
     }
