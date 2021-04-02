@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 
@@ -45,14 +44,18 @@ func solver(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Add("Access-Control-Allow-Headers", "Content-Type")
 	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
-
-	var orders [][]string
-	json.NewDecoder(r.Body).Decode(&orders)
-	if orders != nil {
-		fmt.Fprintln(w, orders)
-	} else {
-		fmt.Fprintln(w, "Hello, World")
+	var message [][]string
+	json.NewDecoder(r.Body).Decode(&message)
+	info := message[0]
+	var orders []Order
+	for i := 1; i < len(message); i++ {
+		var objs [3]string
+		copy(objs[:], message[i][1:])
+		order := Order{unit: message[i][0], objs: objs}
+		orders = append(orders, order)
 	}
+	_ = info
+
 }
 
 func fileHandler(filename string) http.Handler {
@@ -61,3 +64,5 @@ func fileHandler(filename string) http.Handler {
 	}
 	return http.HandlerFunc(f)
 }
+
+// var info = [infoObj.getAttribute("user"), infoObj.getAttribute("role"), infoObj.getAttribute("gameid"), infoObj.getAttribute("turn")];
