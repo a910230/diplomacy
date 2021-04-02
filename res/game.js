@@ -494,13 +494,13 @@ function clicked(obj, event) {
     }
 }
 function sendOrders() {
-    var orders = document.getElementById("orders").getElementsByClassName("order");
     var ret = [];
+
+    var infoObj = document.getElementById();
+    var info = [infoObj.getAttribute("user"), infoObj.getAttribute("role"), infoObj.getAttribute("gameid"), infoObj.getAttribute("turn")];
+    ret.push(info);
     
-    // <div id="info" user="Alice" role="aus" gameid="1" turn="1"></div>
-    // var info = []
-
-
+    var orders = document.getElementById("orders").getElementsByClassName("order");
     for (let i = 0; i < orders.length; ++i) {
         let order = [orders[i].getAttribute("unit"), orders[i].getAttribute("obj1"), orders[i].getAttribute("obj2"), orders[i].getAttribute("obj3")];
         ret.push(order);
