@@ -17,7 +17,7 @@
 <body>
     <div style="position:relative;width:800px;height:697px;">
         <img id="bg" src="res/bg.png" style="position:absolute;z-index:0;"/>
-        <embed id="map" role="rus" status="wait" src="res/map.svg" type="image/svg+xml" />
+        <embed id="map" status="wait" src="res/map.svg" type="image/svg+xml" />
         <div id="menu" style="background-color:seagreen;width:fit-content;visibility:hidden;position:absolute;z-index:3;">
             <div style="overflow:auto;">
                 <div style="float:left;"></div>
@@ -28,13 +28,14 @@
     </div>
     
     <form>
-        Your role: <output id="role">Rus</output><br/>
+        Hi, Alice! This game is GAME0001. It is turn 1. Your role is Austria.<br/>
         Your orders:<br/>
         <output id="orders"></output>
         <span id="tmpOrder" unit="" obj1="" obj2="" obj3=""></span>
         <div><button type="button" onclick="sendOrders()">送出</button></div>
     </form>
     <p id="result"></p>
+    <div id="info" user="Alice" role="aus" gameid="1" turn="1">
     
 </body>
 </html>

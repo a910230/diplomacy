@@ -113,7 +113,7 @@ function getUnitName(provID) { // "A Mar", "F Bla", ... , or ""
     return ret;
 }
 function getRole() { // role of player
-    return document.getElementById("map").getAttribute("role");
+    return document.getElementById("info").getAttribute("role");
 }
 function getTmpOrder() { // tmpOrder object
     return document.getElementById("tmpOrder");
@@ -496,6 +496,11 @@ function clicked(obj, event) {
 function sendOrders() {
     var orders = document.getElementById("orders").getElementsByClassName("order");
     var ret = [];
+    
+    // <div id="info" user="Alice" role="aus" gameid="1" turn="1"></div>
+    // var info = []
+
+
     for (let i = 0; i < orders.length; ++i) {
         let order = [orders[i].getAttribute("unit"), orders[i].getAttribute("obj1"), orders[i].getAttribute("obj2"), orders[i].getAttribute("obj3")];
         ret.push(order);
