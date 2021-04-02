@@ -459,7 +459,7 @@ function conOrder(obj) {
 }
 function conMoveTo(obj) {
     if (getProvType(obj.id) != "coast") return;
-    if (!legalMove(document.getElementById("map").getAttribute("unit2"), obj.id, true)) return;
+    if (!legalMove(getTmpOrder().getAttribute("obj2"), obj.id, true)) return;
     prepare(obj.id, 3);
     appendOrder();
     setStatus("wait");
