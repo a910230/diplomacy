@@ -496,10 +496,10 @@ function clicked(obj, event) {
 function sendOrders() {
     var ret = [];
 
-    var infoObj = document.getElementById();
+    var infoObj = document.getElementById("info");
     var info = [infoObj.getAttribute("user"), infoObj.getAttribute("role"), infoObj.getAttribute("gameid"), infoObj.getAttribute("turn")];
     ret.push(info);
-    
+
     var orders = document.getElementById("orders").getElementsByClassName("order");
     for (let i = 0; i < orders.length; ++i) {
         let order = [orders[i].getAttribute("unit"), orders[i].getAttribute("obj1"), orders[i].getAttribute("obj2"), orders[i].getAttribute("obj3")];
