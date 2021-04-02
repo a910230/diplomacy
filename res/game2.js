@@ -307,8 +307,11 @@ function prepare(text, n) {
             break;
         }
         case 2: { // text == supported or convoyed unit
+            console.log(text);
             order.setAttribute("obj2", text);
+            console.log(text);
             clearTmpOrder(3);
+            console.log(text);
             break;
         }
         case 3: { // text == "H", "spa", ...
@@ -363,7 +366,7 @@ function hold() {
 }
 function move() {
     document.getElementById("menu").style.visibility = "hidden";
-    getTmpOrder.innerHTML += " -";
+    getTmpOrder().innerHTML += " -";
     setStatus("move");    
 }
 function moveTo(obj, event) {
@@ -378,7 +381,7 @@ function moveTo(obj, event) {
 }
 function coastOrder(provID, event) {
     prepare(provID, 1);
-    getTmpOrder.innerHTML += " (";
+    getTmpOrder().innerHTML += " (";
     var menu = document.getElementById("menu");
     var title = menu.firstElementChild.firstElementChild;
     var options = menu.lastElementChild;
@@ -423,7 +426,6 @@ function supOrder(obj, event) {
         menu.style.visibility = "hidden";
         return;
     }
-    console.log(obj.id);
     prepare(obj.id, 2);
     title.innerHTML = getOrderText();
     menu.style.left = (event.pageX + 10) + "px";
@@ -438,7 +440,7 @@ function supHold() {
 }
 function supMove() {
     document.getElementById("menu").style.visibility = "hidden";
-    getTmpOrder.innerHTML += " -";
+    getTmpOrder().innerHTML += " -";
     setStatus("supMove");
 }
 function supMoveTo(obj) {
