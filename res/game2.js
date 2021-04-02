@@ -424,7 +424,6 @@ function supOrder(obj, event) {
         return;
     }
     prepare(obj.id, 2);
-    console.log(getTmpOrder().getAttribute("obj2"));
     title.innerHTML = getOrderText();
     menu.style.left = (event.pageX + 10) + "px";
     menu.style.top = (event.pageY + 10) + "px";
@@ -437,6 +436,7 @@ function supHold() {
     setStatus("wait");
 }
 function supMove() {
+    console.log(getTmpOrder().getAttribute("obj2"));
     document.getElementById("menu").style.visibility = "hidden";
     getTmpOrder().innerHTML += " -";
     setStatus("supMove");
