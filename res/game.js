@@ -78,53 +78,98 @@ var graph = {
     "wes": ["gol", "spa", "mid", "naf", "tun", "tyn"]
 };
 
-function getProv(id) {
-    return document.getElementById("map").getSVGDocument().getElementById(id);
+function getProv(provID) { // province object
+    return document.getElementById("map").getSVGDocument().getElementById(provID);
 }
-
-function getProvType(prov) {
-    var obj = getProv(prov);
+function getProvType(provID) { // "sea", "inland", or "coast"
+    var obj = getProv(provID);
     if (obj.classList[0] == "sea") return "sea";
     if (obj.getElementsByTagName("use").length == 1) return "inland";
     return "coast";
 }
-function getProvName(prov) {
-    return getProv(prov).getElementsByTagName("text")[0].textContent;
+function getProvName(provID) { // "StP", "NAf", ...
+    return getProv(provID).getElementsByTagName("text")[0].textContent;
 }
-function getUnitType(unit) { // return "army" or "fleet"
-    var possibleUnits = getProv(unit).getElementsByTagName("use");
+function getUnitType(provID) { // "army", "fleet", or ""
+    var possibleUnits = getProv(provID).getElementsByTagName("use");
     for (let i = 0; i < possibleUnits.length; ++i) {
         if (!possibleUnits[i].classList.contains("emp")) return possibleUnits[i].classList[0];
     }
     return "";
 }
-function getUnitLoc(unit) { // Must have two coasts
-    var possibleUnits = getProv(unit).getElementsByTagName("use");
-    for (let i = 0; i < possibleUnits.length; ++i) {
+function getUnitLoc(provID) { // "north", "south", or ""
+    if (getUnitType(provID) != "fleet") return "";
+    var possibleUnits = getProv(provID).getElementsByTagName("use");
+    if (possibleUnits.length != 3) return "";
+    for (let i = 0; i < 3; ++i) {
         if (!possibleUnits[i].classList.contains("emp")) return possibleUnits[i].classList[1];
     }
 }
-function getUnitName(unit) {
-    var type = getUnitType(unit);
+function getUnitName(provID) { // "A Mar", "F Bla", ... , or ""
+    var type = getUnitType(provID);
     if (type == "") return "";
     var ret = (type == "army")? "A ": "F ";
-    ret += getProvName(unit);
+    ret += getProvName(provID);
     return ret;
 }
-function appendOrder(newOrder) {
-    var orders = document.getElementById("orders");
-    var oldOrders = orders.childNodes;
-    for (var i = 0; i < oldOrders.length; ++i) {
-        if (oldOrders[i].getAttribute("unit") == newOrder.getAttribute("unit")) {
-            oldOrders[i].remove();
-            break;
-        }
-    }
-    newOrder.className = "order";
-    newOrder.removeAttribute("id");
-    orders.appendChild(newOrder);
+function getRole() { // role of player
+    return document.getElementById("map").getAttribute("role");
 }
-function twoCoasts(from, to) {
+function getTmpOrder() { // tmpOrder object
+    return document.getElementById("tmpOrder");
+}
+function getUnit() { // unit in new order ("stpn" for example)
+    return getTmpOrder().getAttribute("unit");
+}
+function getOrderText() { // literal for tmpOrder
+    var order = getTmpOrder();
+    var text = "";
+
+    var unit = getUnit();
+    if (unit == "") return text;
+    if (unit.length == 4) unit = unit.slice(0, 3);
+    text += getUnitName(unit);
+
+    var obj1 = order.getAttribute("obj1");
+    if (obj1 == "") return text;
+    if (obj1 == "H") {
+        text += " H";
+        return text;
+    }
+    if (obj1 == "S" || obj1 == "C") {
+        text += " " + obj1;
+    } else if (obj1.length == 4) {
+        text += " - " + getProvName(obj1.slice(0, 3));
+        text += (obj1[3] == "n")? " (nc)": " (sc)";
+        return text;
+    } else {
+        text += " - " + getProvName(obj1);
+        return text;
+    }
+
+    var obj2 = order.getAttribute("obj2");
+    if (obj2 == "") return text;
+    if (obj2.length == 4) obj2 = obj2.slice(0, 3);
+    text += " " + getUnitName(obj2);
+
+    var obj3 = order.getAttribute("obj3");
+    if (obj3 == "") return text;
+    if (obj3 == "H") {
+        text += " H";
+        return text;
+    }
+    if (obj3.length == 4) {
+        text += " - " + getProvName(obj3.slice(0, 3));
+        text += (obj3[3] == "n")? " (nc)": " (sc)";
+        return text;
+    }
+    text += " - " + getProvName(obj3);
+    return text;
+}
+function getStatus() { // "wait", "move", "sup", 
+    return document.getElementById("map").getAttribute("status");
+}
+function needToChooseCoast(from, to) { // true or false
     switch (to) {
         case "spa":
             if (from == "mid" || from == "por") return true;
@@ -135,7 +180,29 @@ function twoCoasts(from, to) {
     }
     return false;
 }
-function legalMove(from, to, byConvoy) {
+function getDestWithCoast(provID) { // "stp", "stpn", "stps", ...
+    var unit = getUnit().slice(0, 3);
+    if (getUnitType(unit) != "fleet") return provID;
+    switch (provID) {
+        case "stp": {
+            if (["bar", "nwy"].includes(unit)) return "stpn";
+            if (["fin", "lvn", "bot"].includes(unit)) return "stps";
+            break;
+        }
+        case "bul": {
+            if (["rum", "bla"].includes(unit)) return "buln";
+            if (["gre", "aeg"].includes(unit)) return "buls";
+            break;
+        }
+        case "spa": {
+            if (unit == "gas") return "span";
+            if (["mar", "gol", "wes"].includes(unit)) return "spas";
+            break;
+        }
+    }
+    return provID;
+}
+function legalMove(from, to, byConvoy) { //AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
     if (from == to) return false;
     var unitType = getUnitType(from);
     var fromType = getProvType(from);
@@ -203,42 +270,82 @@ function legalMove(from, to, byConvoy) {
     return true;
 }
 
-function prepare(text, n) {
-    var role = document.getElementById("map").getAttribute("role");
-    var order = document.getElementById("tmpOrder");
-    var twoCoasts = ((text == "stp" || text == "spa" || text == "bul") && getUnitType(text) == "fleet");
+function setStatus(status) { // set order status
+    document.getElementById("map").setAttribute("status", status);
+}
+function clearTmpOrder(n) { // clear from n-th element
+    var order = getTmpOrder();
     switch (n) {
-        case 0: {
-            order.innerHTML = getUnitName(text);
-            if (twoCoasts) {
-                text += getUnitLoc(text)[0];
-            }
-            order.setAttribute("unit", text);
+        case 0:
+            order.innerHTML = "";
+            order.setAttribute("unit", "");
+        case 1:
             order.setAttribute("obj1", "");
+        case 2:
             order.setAttribute("obj2", "");
+        case 3:
             order.setAttribute("obj3", "");
-            break;
-        }
-        case 1: {
-
-            break;
-        }
-        case 2: {
-            break;
-        }
-        case 3: {
-            break;
-        }
     }
 }
 
-function getUnit() {
-    return document.getElementById("tmpOrder").getAttribute("unit");
+
+function prepare(text, n) {
+    var order = getTmpOrder();
+    switch (n) {
+        case 0: { // text == ordered unit
+            if (getUnitLoc(text) != "") { // unit on one of two coasts
+                text += getUnitLoc(text)[0];
+            }
+            order.setAttribute("unit", text);
+            clearTmpOrder(1);
+            break;
+        }
+        case 1: { // text == "H", "S", "C", "spa", "spas", ...
+            if (text == "stp" || text == "bul" || text == "spa") text = getDestWithCoast(text);
+            order.setAttribute("obj1", text);
+            clearTmpOrder(2);
+            break;
+        }
+        case 2: { // text == supported or convoyed unit
+            if (getUnitLoc(text) != "") { // unit on one of two coasts
+                text += getUnitLoc(text)[0];
+            }
+            order.setAttribute("obj2", text);
+            clearTmpOrder(3);
+            break;
+        }
+        case 3: { // text == "H", "spa", ...
+            order.setAttribute("obj3", text)
+            break;
+        }
+    }
+    order.innerHTML = getOrderText();
 }
+function appendOrder() {
+    var newOrder = document.createElement("span");
+    var tmpOrder = getTmpOrder();
+    newOrder.setAttribute("unit", getUnit());
+    newOrder.setAttribute("obj1", tmpOrder.getAttribute("obj1"));
+    newOrder.setAttribute("obj2", tmpOrder.getAttribute("obj2"));
+    newOrder.setAttribute("obj3", tmpOrder.getAttribute("obj3"));
+    newOrder.innerHTML = tmpOrder.innerHTML + "<br/>";
+    clearTmpOrder(0);
+    
+    var orders = document.getElementById("orders");
+    var oldOrders = orders.childNodes;
+    for (var i = 0; i < oldOrders.length; ++i) {
+        if (oldOrders[i].getAttribute("unit") == newOrder.getAttribute("unit")) {
+            oldOrders[i].remove();
+            break;
+        }
+    }
+    newOrder.className = "order";
+    orders.appendChild(newOrder);
+} 
 
 function order(obj, event) {
-    var role = document.getElementById("map").getAttribute("role"); //玩家國家
-    if (obj.getElementsByClassName(role).length == 0) return; //判斷是否有玩家單位
+    var role = getRole();
+    if (obj.getElementsByClassName(role).length == 0) return; // have unit in obj
     prepare(obj.id, 0);
     var menu = document.getElementById("menu");
     var title = menu.firstElementChild.firstElementChild;
@@ -253,87 +360,65 @@ function order(obj, event) {
     menu.style.visibility = "visible";
 }
 function hold() {
-    var unit = getUnit();
     document.getElementById("menu").style.visibility = "hidden";
-
-    var newOrder = document.createElement("span");
-    newOrder.setAttribute("unit", unit);
-    newOrder.innerHTML = getUnitName(unit) + " H<br/>";
-    appendOrder(newOrder);
-    document.getElementById("map").removeAttribute("unit");
+    prepare("H", 1);
+    appendOrder();
 }
 function move() {
-    var unit = document.getElementById("map").getAttribute("unit");
     document.getElementById("menu").style.visibility = "hidden";
-    var orders = document.getElementById("orders");
-    var tmpOrder = document.createElement("span");
-    tmpOrder.id = "tmpOrder";
-    tmpOrder.setAttribute("unit", unit);
-    tmpOrder.innerHTML = getUnitName(unit) + " - ";
-    orders.appendChild(tmpOrder);
-    document.getElementById("map").setAttribute("status", "move");
+    getTmpOrder().innerHTML += " -";
+    setStatus("move");    
 }
 function moveTo(obj, event) {
-    var unit = document.getElementById("map").getAttribute("unit");
+    var unit = getUnit().slice(0, 3);
     var unitType = getUnitType(unit);
-    var provType = getProvType(obj.id);
     if (!legalMove(unit, obj.id, true)) return;
-    if (unitType == "fleet" && twoCoasts(unit, obj.id)) return coastOrder(unit, obj.id, event);
+    if (unitType == "fleet" && needToChooseCoast(unit, obj.id)) return coastOrder(obj.id, event);
     document.getElementById("menu").style.visibility = "hidden";
-    var tmpOrder = document.getElementById("tmpOrder");
-    tmpOrder.innerHTML += getProvName(obj.id) + "<br/>";
-    appendOrder(tmpOrder);
-    document.getElementById("map").setAttribute("status", "wait");
-    document.getElementById("map").removeAttribute("unit");
+    prepare(obj.id, 1);
+    appendOrder();
+    setStatus("wait");
 }
-function coastOrder(from, to, event) {
+function coastOrder(provID, event) {
+    prepare(provID, 1);
+    getTmpOrder().innerHTML += " (";
     var menu = document.getElementById("menu");
     var title = menu.firstElementChild.firstElementChild;
     var options = menu.lastElementChild;
-    title.innerHTML = getUnitName(from) + " - " + getProvName(to);
+    title.innerHTML = getOrderText();
     options.innerHTML = "<span onclick=\"javascript:coast(0)\">North Coast</span> / <span onclick=\"javascript:coast(1)\">South Coast</span>";
     menu.style.left = (event.pageX + 10) + "px";
     menu.style.top = (event.pageY + 10) + "px";
     menu.style.visibility = "visible";
 }
 function coast(coast) { // 0 = North, 1 = South
-    var menu = document.getElementById("menu");
-    menu.style.visibility = "hidden";
-    var title = menu.firstElementChild.firstElementChild;
-    var tmpOrder = document.getElementById("tmpOrder");
-    tmpOrder.innerHTML = title.innerHTML;
-    if (coast) tmpOrder.innerHTML += " (sc)<br/>";
-    else tmpOrder.innerHTML += " (nc)<br/>";
-    appendOrder(tmpOrder);
-    document.getElementById("map").setAttribute("status", "wait");
-    document.getElementById("map").removeAttribute("unit");
+    document.getElementById("menu").style.visibility = "hidden";
+    if (coast == 0) {
+        prepare(getTmpOrder().getAttribute("obj1") + "n", 1);
+    } else {
+        prepare(getTmpOrder().getAttribute("obj1") + "s", 1);
+    }
+    appendOrder();
+    setStatus("wait");
 }
 function support() {
-    var unit = document.getElementById("map").getAttribute("unit");
     document.getElementById("menu").style.visibility = "hidden";
-    var orders = document.getElementById("orders");
-    var tmpOrder = document.createElement("span");
-    tmpOrder.id = "tmpOrder";
-    tmpOrder.setAttribute("unit", unit);
-    tmpOrder.innerHTML = getUnitName(unit) + " S ";
-    orders.appendChild(tmpOrder);
-    document.getElementById("map").setAttribute("status", "sup");
+    prepare("S", 1);
+    setStatus("sup");
 }
 function supOrder(obj, event) {
-    if (obj.id == document.getElementById("map").getAttribute("unit")) return;
-    var name = getUnitName(obj.id);
-    if (name == "") return;
+    var supporter = getUnit().slice(0, 3);
+    var receiver = obj.id;
+    if (receiver == supporter) return;
+    if (getUnitType(receiver) == "") return;
     var menu = document.getElementById("menu");
     var title = menu.firstElementChild.firstElementChild;
     var options = menu.lastElementChild;
-    var supporter = document.getElementById("map").getAttribute("unit");
-    title.innerHTML = getUnitName(supporter) + " S " + name;
-// May cause stuck
     options.innerHTML = ""; 
-    if (legalMove(supporter, obj.id, false)) options.innerHTML += "<span onclick=\"javascript:supHold()\">Hold</span>";
+    if (legalMove(supporter, receiver, false)) options.innerHTML += "<span onclick=\"javascript:supHold()\">Hold</span>";
     var supGoal = graph[supporter];
     for (let i = 0; i < supGoal.length; ++i) {
-        if (legalMove(obj.id, supGoal[i], true) && legalMove(supporter, supGoal[i], false)) {
+        if (legalMove(receiver, supGoal[i], true) && legalMove(supporter, supGoal[i], false)) {
             options.innerHTML += " <span onclick=\"javascript:supMove()\">Move</span>";
             break;
         }
@@ -342,66 +427,46 @@ function supOrder(obj, event) {
         menu.style.visibility = "hidden";
         return;
     }
-// May cause stuck
-    //options.innerHTML = "<span onclick=\"javascript:supHold()\">Hold</span> <span onclick=\"javascript:supMove()\">Move</span>";
+    prepare(receiver, 2);
+    title.innerHTML = getOrderText();
     menu.style.left = (event.pageX + 10) + "px";
     menu.style.top = (event.pageY + 10) + "px";
     menu.style.visibility = "visible";
-    var tmpOrder = document.getElementById("tmpOrder");
-    tmpOrder.innerHTML = title.innerHTML;
-    document.getElementById("map").setAttribute("unit2", obj.id);
 }
-function supHold(obj) {
+function supHold() {
     document.getElementById("menu").style.visibility = "hidden";
-    var tmpOrder = document.getElementById("tmpOrder");
-    tmpOrder.innerHTML += " H<br/>";
-    appendOrder(tmpOrder);
-    document.getElementById("map").setAttribute("status", "wait");
-    document.getElementById("map").removeAttribute("unit");
-    document.getElementById("map").removeAttribute("unit2");
+    prepare("H", 3);
+    appendOrder();
+    setStatus("wait");
 }
 function supMove() {
-    document.getElementById("map").setAttribute("status", "supMove");
     document.getElementById("menu").style.visibility = "hidden";
+    getTmpOrder().innerHTML += " -";
+    setStatus("supMove");
 }
 function supMoveTo(obj) {
-    var tmpOrder = document.getElementById("tmpOrder");
-    var supporter = tmpOrder.getAttribute("unit");
-    var receiver = document.getElementById("map").getAttribute("unit2");
-    if (!legalMove(receiver, obj.id, true) || !legalMove(supporter, obj.id, false)) return;
-    tmpOrder.innerHTML += " - " + getProvName(obj.id) + "<br/>";
-    appendOrder(tmpOrder);
-    document.getElementById("map").setAttribute("status", "wait");
-    document.getElementById("map").removeAttribute("unit");
+    if (!legalMove(getTmpOrder().getAttribute("obj2"), obj.id, true) || !legalMove(getUnit().slice(0, 3), obj.id, false)) return;
+    prepare(obj.id, 3);
+    appendOrder();
+    setStatus("wait");
 }
 function convoy() {
-    var unit = document.getElementById("map").getAttribute("unit");
     document.getElementById("menu").style.visibility = "hidden";
-    var orders = document.getElementById("orders");
-    var tmpOrder = document.createElement("span");
-    tmpOrder.id = "tmpOrder";
-    tmpOrder.setAttribute("unit", unit);
-    tmpOrder.innerHTML = getUnitName(unit) + " C ";
-    orders.appendChild(tmpOrder);
-    document.getElementById("map").setAttribute("status", "con");
+    prepare("C", 1);
+    setStatus("con");
 }
 function conOrder(obj) {
     if (getUnitType(obj.id) != "army") return;
     if (getProvType(obj.id) != "coast") return;
-    var tmpOrder = document.getElementById("tmpOrder");
-    tmpOrder.innerHTML += getUnitName(obj.id) + " - ";
-    document.getElementById("map").setAttribute("status", "conMove");
-    document.getElementById("map").setAttribute("unit2", obj.id);
+    prepare(obj.id, 2);
+    setStatus("conMove");
 }
 function conMoveTo(obj) {
     if (getProvType(obj.id) != "coast") return;
-    if (!legalMove(document.getElementById("map").getAttribute("unit2"), obj.id, true)) return;
-    var tmpOrder = document.getElementById("tmpOrder");
-    tmpOrder.innerHTML += getProvName(obj.id) + "<br/>";
-    appendOrder(tmpOrder);
-    document.getElementById("map").setAttribute("status", "wait");
-    document.getElementById("map").removeAttribute("unit");
-    document.getElementById("map").removeAttribute("unit2");
+    if (!legalMove(getTmpOrder().getAttribute("obj2"), obj.id, true)) return;
+    prepare(obj.id, 3);
+    appendOrder();
+    setStatus("wait");
 }
 
 function clicked(obj, event) {
@@ -430,40 +495,10 @@ function clicked(obj, event) {
 }
 function sendOrders() {
     var orders = document.getElementById("orders").getElementsByClassName("order");
-    var ansatz1 = /[AF]\s+(\w{3})\s+([-HSC])\s?([^]*)/;
-    var ansatz2 = /[AF]\s+(\w{3})\s+([-H])\s?(\w*)/;
     var ret = [];
     for (let i = 0; i < orders.length; ++i) {
-        let order = orders[i].textContent;
-        let parsed1 = ansatz1.exec(order);
-        ret[i] = [parsed1[1].toLowerCase()];
-        let method = parsed1[2];
-        switch (method) {
-            case "-": {
-                ret[i].push(parsed1[3].toLowerCase());
-                break;
-            }
-            case "H": {
-                ret[i].push(method);
-                break;
-            }
-            case "S": {
-                ret[i].push(method);
-                let supOrder = ansatz2.exec(parsed1[3]);
-                ret[i].push(supOrder[1].toLowerCase());
-                let supMethod = supOrder[2];
-                if (supMethod == "-") ret[i].push(supOrder[3].toLowerCase());
-                else ret[i].push(supMethod);
-                break;
-            }
-            case "C": {
-                ret[i].push(method);
-                let conOrder = ansatz2.exec(parsed1[3]);
-                ret[i].push(conOrder[1].toLowerCase());
-                ret[i].push(conOrder[3].toLowerCase());
-                break;
-            }
-        }
+        let order = [orders[i].getAttribute("unit"), orders[i].getAttribute("obj1"), orders[i].getAttribute("obj2"), orders[i].getAttribute("obj3")];
+        ret.push(order);
     }
     var xmlhttp;
     if (window.XMLHttpRequest) xmlhttp = new XMLHttpRequest();
