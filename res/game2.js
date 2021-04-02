@@ -391,9 +391,9 @@ function coastOrder(provID, event) {
 function coast(coast) { // 0 = North, 1 = South
     document.getElementById("menu").style.visibility = "hidden";
     if (coast == 0) {
-        prepare(getTmpOrder().getAttribute(obj1) + "n", 1);
+        prepare(getTmpOrder().getAttribute("obj1") + "n", 1);
     } else {
-        prepare(getTmpOrder().getAttribute(obj1) + "s", 1);
+        prepare(getTmpOrder().getAttribute("obj1") + "s", 1);
     }
     appendOrder();
     setStatus("wait");
