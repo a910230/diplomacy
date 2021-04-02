@@ -307,6 +307,9 @@ function prepare(text, n) {
             break;
         }
         case 2: { // text == supported or convoyed unit
+            if (getUnitLoc(text) != "") { // unit on one of two coasts
+                text += getUnitLoc(text)[0];
+            }
             order.setAttribute("obj2", text);
             clearTmpOrder(3);
             break;
@@ -405,16 +408,17 @@ function support() {
 }
 function supOrder(obj, event) {
     var supporter = getUnit().slice(0, 3);
-    if (obj.id == supporter) return;
-    if (getUnitType(obj.id) == "") return;
+    var receiver = obj.id;
+    if (receiver == supporter) return;
+    if (getUnitType(receiver) == "") return;
     var menu = document.getElementById("menu");
     var title = menu.firstElementChild.firstElementChild;
     var options = menu.lastElementChild;
     options.innerHTML = ""; 
-    if (legalMove(supporter, obj.id, false)) options.innerHTML += "<span onclick=\"javascript:supHold()\">Hold</span>";
+    if (legalMove(supporter, receiver, false)) options.innerHTML += "<span onclick=\"javascript:supHold()\">Hold</span>";
     var supGoal = graph[supporter];
     for (let i = 0; i < supGoal.length; ++i) {
-        if (legalMove(obj.id, supGoal[i], true) && legalMove(supporter, supGoal[i], false)) {
+        if (legalMove(receiver, supGoal[i], true) && legalMove(supporter, supGoal[i], false)) {
             options.innerHTML += " <span onclick=\"javascript:supMove()\">Move</span>";
             break;
         }
@@ -423,7 +427,7 @@ function supOrder(obj, event) {
         menu.style.visibility = "hidden";
         return;
     }
-    prepare(obj.id, 2);
+    prepare(receiver, 2);
     title.innerHTML = getOrderText();
     menu.style.left = (event.pageX + 10) + "px";
     menu.style.top = (event.pageY + 10) + "px";
