@@ -423,9 +423,8 @@ function supOrder(obj, event) {
         menu.style.visibility = "hidden";
         return;
     }
-    console.log(getTmpOrder().getAttribute(2));
+    console.log(obj.id);
     prepare(obj.id, 2);
-    console.log(getTmpOrder().getAttribute(2));
     title.innerHTML = getOrderText();
     menu.style.left = (event.pageX + 10) + "px";
     menu.style.top = (event.pageY + 10) + "px";
