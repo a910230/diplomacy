@@ -404,7 +404,8 @@ function support() {
     setStatus("sup");
 }
 function supOrder(obj, event) {
-    if (obj.id == getUnit().slice(0, 3)) return;
+    var supporter = getUnit().slice(0, 3);
+    if (obj.id == supporter) return;
     if (getUnitType(obj.id) == "") return;
     var menu = document.getElementById("menu");
     var title = menu.firstElementChild.firstElementChild;
