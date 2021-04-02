@@ -307,11 +307,11 @@ function prepare(text, n) {
             break;
         }
         case 2: { // text == supported or convoyed unit
-            console.log(text);
+            console.log(getTmpOrder().getAttribute("obj2"));
             order.setAttribute("obj2", text);
-            console.log(text);
+            console.log(getTmpOrder().getAttribute("obj2"));
             clearTmpOrder(3);
-            console.log(text);
+            console.log(getTmpOrder().getAttribute("obj2"));
             break;
         }
         case 3: { // text == "H", "spa", ...
