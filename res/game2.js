@@ -441,6 +441,8 @@ function supMove() {
     setStatus("supMove");
 }
 function supMoveTo(obj) {
+    console.log(getTmpOrder().getAttribute(2));
+    console.log(getUnit().slice(0, 3));
     if (!legalMove(getTmpOrder().getAttribute(2), obj.id, true) || !legalMove(getUnit().slice(0, 3), obj.id, false)) return;
     prepare(obj.id, 3);
     appendOrder();
