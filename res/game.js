@@ -376,8 +376,7 @@ function showResult(json) { // literal for tmpOrder
         let obj3 = order[3];
         if (obj3 == "H") {
             text += " H";
-        }
-        if (obj3.length == 4) {
+        } else if (obj3.length == 4) {
             text += " - " + getProvName(obj3.slice(0, 3));
             text += (obj3[3] == "n")? " (nc)": " (sc)";
         } else {
