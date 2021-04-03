@@ -344,6 +344,7 @@ function showResult(json) { // literal for tmpOrder
     var orders = JSON.parse(json);
     var result = document.getElementById("result");
     orders.forEach(order => {
+        console.log(order);
         let text = "";
 
         let unit = order[0];
@@ -385,7 +386,6 @@ function showResult(json) { // literal for tmpOrder
             return text;
         }
         text += " - " + getProvName(obj3);
-        console.log(text);
 
         let node = document.createElement("span");
         node.innerText = text + "<br/>";
