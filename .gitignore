@@ -1,9 +1,7 @@
-server
 server.log
-go
+run
 stop
 update
-test/
-test.go
+diplomacy
 diplomacy.exe
 global_variable.go
