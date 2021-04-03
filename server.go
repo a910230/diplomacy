@@ -46,14 +46,14 @@ func solver(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Add("Access-Control-Allow-Headers", "Content-Type")
 	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
-	var message [][4]string
-	json.NewDecoder(r.Body).Decode(&message)
-	info := message[0]
+	var input [][4]string
+	json.NewDecoder(r.Body).Decode(&input)
+	info := input[0]
 	user, role, turn := info[0], info[1], info[3]
 	gameid, _ := strconv.Atoi(info[2])
 	var orders []Order
-	for i := 1; i < len(message); i++ {
-		orders = append(orders, arrToOrder(message[i]))
+	for i := 1; i < len(input); i++ {
+		orders = append(orders, arrToOrder(input[i]))
 	}
 	game, loadedRole := loadGame(user, gameid)
 	if loadedRole != role {
@@ -61,7 +61,14 @@ func solver(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	game.sendOrders(role, orders)
-	_, _ = turn, game
+
+	var output [][4]string
+	allOrders := game.readOrders(role)
+	for _, order := range allOrders {
+		output = append(output, orderToArr(order))
+	}
+	fmt.Fprintln(w, output)
+	_ = turn
 }
 
 func fileHandler(filename string) http.Handler {
@@ -70,5 +77,3 @@ func fileHandler(filename string) http.Handler {
 	}
 	return http.HandlerFunc(f)
 }
-
-// var info = [infoObj.getAttribute("user"), infoObj.getAttribute("role"), infoObj.getAttribute("gameid"), infoObj.getAttribute("turn")];
