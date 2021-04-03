@@ -1,1 +1,0 @@
-sudo nohup ./diplomacy > server.log 2>&1 &
