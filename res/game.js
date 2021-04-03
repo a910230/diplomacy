@@ -342,6 +342,7 @@ function appendOrder() {
 }
 function showResult(json) { // literal for tmpOrder
     var orders = JSON.parse(json);
+    console.log(orders);
     var result = document.getElementById("result");
     orders.forEach(order => {
         let text = "";
