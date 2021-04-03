@@ -10,6 +10,19 @@ type Order struct {
 	objs [3]string
 }
 
+func arrToOrder(order [4]string) Order {
+	var objs [3]string
+	copy(objs[:], order[1:])
+	return Order{unit: order[0], objs: objs}
+}
+
+func orderToArr(order Order) [4]string {
+	var ret [4]string
+	ret[0] = order.unit
+	copy(ret[1:], order.objs[:])
+	return ret
+}
+
 func (game *Game) readOrders(role string) []Order {
 	var orders []Order
 	rows, err := game.db.Query("select unit, obj1, obj2, obj3 from "+

@@ -46,24 +46,21 @@ func solver(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Add("Access-Control-Allow-Headers", "Content-Type")
 	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
-	var message [][]string
+	var message [][4]string
 	json.NewDecoder(r.Body).Decode(&message)
 	info := message[0]
 	user, role, turn := info[0], info[1], info[3]
 	gameid, _ := strconv.Atoi(info[2])
 	var orders []Order
 	for i := 1; i < len(message); i++ {
-		var objs [3]string
-		copy(objs[:], message[i][1:])
-		order := Order{unit: message[i][0], objs: objs}
-		orders = append(orders, order)
+		orders = append(orders, arrToOrder(message[i]))
 	}
 	game, loadedRole := loadGame(user, gameid)
 	if loadedRole != role {
 		fmt.Fprintln(w, "Loading failed")
-	} else {
-		fmt.Fprintln(w, "Game loaded")
+		return
 	}
+	game.sendOrders(role, orders)
 	_, _ = turn, game
 }
 
