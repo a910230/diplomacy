@@ -121,7 +121,7 @@ function getTmpOrder() { // tmpOrder object
 function getUnit() { // unit in new order ("stpn" for example)
     return getTmpOrder().getAttribute("unit");
 }
-function getOrderText(order = getTmpOrder()) { // literal for tmpOrder
+function getOrderText() { // literal for tmpOrder
     var order = getTmpOrder();
     var text = "";
 
@@ -340,53 +340,57 @@ function appendOrder() {
     newOrder.className = "order";
     orders.appendChild(newOrder);
 }
-// function showResult(json) { // literal for tmpOrder
-//     var orders = JSON.parse(json)
+function showResult(json) { // literal for tmpOrder
+    var orders = JSON.parse(json);
+    var result = document.getElementById("result");
+    orders.forEach(order => {
+        let text = "";
 
-//     var order = getTmpOrder();
-//     var text = "";
+        let unit = order[0];
+        if (unit == "") return text;
+        if (unit.length == 4) unit = unit.slice(0, 3);
+        text += getUnitName(unit);
 
-//     var unit = getUnit();
-//     if (unit == "") return text;
-//     if (unit.length == 4) unit = unit.slice(0, 3);
-//     text += getUnitName(unit);
+        let obj1 = order[1];
+        if (obj1 == "") return text;
+        if (obj1 == "H") {
+            text += " H";
+            return text;
+        }
+        if (obj1 == "S" || obj1 == "C") {
+            text += " " + obj1;
+        } else if (obj1.length == 4) {
+            text += " - " + getProvName(obj1.slice(0, 3));
+            text += (obj1[3] == "n")? " (nc)": " (sc)";
+            return text;
+        } else {
+            text += " - " + getProvName(obj1);
+            return text;
+        }
 
-//     var obj1 = order.getAttribute("obj1");
-//     if (obj1 == "") return text;
-//     if (obj1 == "H") {
-//         text += " H";
-//         return text;
-//     }
-//     if (obj1 == "S" || obj1 == "C") {
-//         text += " " + obj1;
-//     } else if (obj1.length == 4) {
-//         text += " - " + getProvName(obj1.slice(0, 3));
-//         text += (obj1[3] == "n")? " (nc)": " (sc)";
-//         return text;
-//     } else {
-//         text += " - " + getProvName(obj1);
-//         return text;
-//     }
+        let obj2 = order[2];
+        if (obj2 == "") return text;
+        if (obj2.length == 4) obj2 = obj2.slice(0, 3);
+        text += " " + getUnitName(obj2);
 
-//     var obj2 = order.getAttribute("obj2");
-//     if (obj2 == "") return text;
-//     if (obj2.length == 4) obj2 = obj2.slice(0, 3);
-//     text += " " + getUnitName(obj2);
+        let obj3 = order[3];
+        if (obj3 == "") return text;
+        if (obj3 == "H") {
+            text += " H";
+            return text;
+        }
+        if (obj3.length == 4) {
+            text += " - " + getProvName(obj3.slice(0, 3));
+            text += (obj3[3] == "n")? " (nc)": " (sc)";
+            return text;
+        }
+        text += " - " + getProvName(obj3);
 
-//     var obj3 = order.getAttribute("obj3");
-//     if (obj3 == "") return text;
-//     if (obj3 == "H") {
-//         text += " H";
-//         return text;
-//     }
-//     if (obj3.length == 4) {
-//         text += " - " + getProvName(obj3.slice(0, 3));
-//         text += (obj3[3] == "n")? " (nc)": " (sc)";
-//         return text;
-//     }
-//     text += " - " + getProvName(obj3);
-//     return text;
-// }
+        let node = document.createElement("span");
+        node.innerText = text + "<br/>";
+        result.appendChild(node);
+    });
+}
 
 function order(obj, event) {
     var role = getRole();
