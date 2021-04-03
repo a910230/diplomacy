@@ -6,3 +6,4 @@ update
 test/
 test.go
 diplomacy.exe
+global_variable.go
