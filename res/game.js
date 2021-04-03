@@ -346,6 +346,7 @@ function showResult(json) { // literal for tmpOrder
     orders.forEach(order => {
         let node = document.createElement("span");
         let text = "";
+        console.log(order)
 
         let unit = order[0];
         if (unit.length == 4) unit = unit.slice(0, 3);
