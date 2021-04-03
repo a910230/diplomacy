@@ -68,7 +68,7 @@ func solver(w http.ResponseWriter, r *http.Request) {
 		allOrdersArr = append(allOrdersArr, orderToArr(order))
 	}
 	output, _ := json.Marshal(&allOrdersArr)
-	fmt.Fprintln(w, output)
+	fmt.Fprintln(w, string(output))
 	_ = turn
 }
 
