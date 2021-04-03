@@ -62,11 +62,12 @@ func solver(w http.ResponseWriter, r *http.Request) {
 	}
 	game.sendOrders(role, orders)
 
-	var output [][4]string
+	var allOrdersArr [][4]string
 	allOrders := game.readOrders(role)
 	for _, order := range allOrders {
-		output = append(output, orderToArr(order))
+		allOrdersArr = append(allOrdersArr, orderToArr(order))
 	}
+	output, _ := json.Marshal(&allOrdersArr)
 	fmt.Fprintln(w, output)
 	_ = turn
 }
