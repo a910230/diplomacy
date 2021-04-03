@@ -353,8 +353,9 @@ function showResult(json) { // literal for tmpOrder
         text += getUnitName(unit);
 
         let obj1 = order[1];
-        if (obj1 == "H") text += " H";
-        if (obj1 == "S" || obj1 == "C") {
+        if (obj1 == "H") {
+            text += " H";
+        } else if (obj1 == "S" || obj1 == "C") {
             text += " " + obj1;
         } else if (obj1.length == 4) {
             text += " - " + getProvName(obj1.slice(0, 3));
