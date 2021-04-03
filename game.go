@@ -31,6 +31,10 @@ func loadGame(username string, id int) (*Game, string) {
 	var game Game
 	dbName := gameName(id)
 	db := connect(dbName)
+	_, err := db.Query("select * from INFO")
+	if err != nil {
+		return &game, ""
+	}
 	role := checkUser(username, db)
 	if role == "" {
 		return &game, ""

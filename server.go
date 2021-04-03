@@ -2,8 +2,10 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -47,6 +49,8 @@ func solver(w http.ResponseWriter, r *http.Request) {
 	var message [][]string
 	json.NewDecoder(r.Body).Decode(&message)
 	info := message[0]
+	user, role, turn := info[0], info[1], info[3]
+	gameid, _ := strconv.Atoi(info[2])
 	var orders []Order
 	for i := 1; i < len(message); i++ {
 		var objs [3]string
@@ -54,8 +58,13 @@ func solver(w http.ResponseWriter, r *http.Request) {
 		order := Order{unit: message[i][0], objs: objs}
 		orders = append(orders, order)
 	}
-	_ = info
-
+	game, loadedRole := loadGame(user, gameid)
+	if loadedRole != role {
+		fmt.Fprintln(w, "Loading failed")
+	} else {
+		fmt.Fprintln(w, "Game loaded")
+	}
+	_, _ = turn, game
 }
 
 func fileHandler(filename string) http.Handler {
