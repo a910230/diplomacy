@@ -121,7 +121,7 @@ function getTmpOrder() { // tmpOrder object
 function getUnit() { // unit in new order ("stpn" for example)
     return getTmpOrder().getAttribute("unit");
 }
-function getOrderText() { // literal for tmpOrder
+function getOrderText(order = getTmpOrder()) { // literal for tmpOrder
     var order = getTmpOrder();
     var text = "";
 
@@ -287,8 +287,6 @@ function clearTmpOrder(n) { // clear from n-th element
             order.setAttribute("obj3", "");
     }
 }
-
-
 function prepare(text, n) {
     var order = getTmpOrder();
     switch (n) {
@@ -341,7 +339,54 @@ function appendOrder() {
     }
     newOrder.className = "order";
     orders.appendChild(newOrder);
-} 
+}
+// function showResult(json) { // literal for tmpOrder
+//     var orders = JSON.parse(json)
+
+//     var order = getTmpOrder();
+//     var text = "";
+
+//     var unit = getUnit();
+//     if (unit == "") return text;
+//     if (unit.length == 4) unit = unit.slice(0, 3);
+//     text += getUnitName(unit);
+
+//     var obj1 = order.getAttribute("obj1");
+//     if (obj1 == "") return text;
+//     if (obj1 == "H") {
+//         text += " H";
+//         return text;
+//     }
+//     if (obj1 == "S" || obj1 == "C") {
+//         text += " " + obj1;
+//     } else if (obj1.length == 4) {
+//         text += " - " + getProvName(obj1.slice(0, 3));
+//         text += (obj1[3] == "n")? " (nc)": " (sc)";
+//         return text;
+//     } else {
+//         text += " - " + getProvName(obj1);
+//         return text;
+//     }
+
+//     var obj2 = order.getAttribute("obj2");
+//     if (obj2 == "") return text;
+//     if (obj2.length == 4) obj2 = obj2.slice(0, 3);
+//     text += " " + getUnitName(obj2);
+
+//     var obj3 = order.getAttribute("obj3");
+//     if (obj3 == "") return text;
+//     if (obj3 == "H") {
+//         text += " H";
+//         return text;
+//     }
+//     if (obj3.length == 4) {
+//         text += " - " + getProvName(obj3.slice(0, 3));
+//         text += (obj3[3] == "n")? " (nc)": " (sc)";
+//         return text;
+//     }
+//     text += " - " + getProvName(obj3);
+//     return text;
+// }
 
 function order(obj, event) {
     var role = getRole();
@@ -511,8 +556,7 @@ function sendOrders() {
     xmlhttp.onreadystatechange = function() {
         document.getElementById("result").innerHTML = "傳送中";
         if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-            document.getElementById("result").innerHTML = "傳送成功";
-            document.getElementById("result").innerHTML += xmlhttp.responseText;
+            document.getElementById("result").innerHTML = xmlhttp.responseText;
         }
     }
     xmlhttp.open("POST", "https://diplomacy.guru/solver", true);
