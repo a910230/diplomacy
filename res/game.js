@@ -557,7 +557,7 @@ function sendOrders() {
     xmlhttp.onreadystatechange = function() {
         document.getElementById("result").innerHTML = "傳送中";
         if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-            // document.getElementById("result").innerHTML = xmlhttp.responseText;
+            document.getElementById("result").innerHTML = "";
             showResult(xmlhttp.responseText);
         }
     }
