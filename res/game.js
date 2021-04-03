@@ -366,7 +366,7 @@ function showResult(json) { // literal for tmpOrder
 
         let obj2 = order[2];
         if (obj2 == "") {
-            node.innerText = text + "<br/>";
+            node.innerHTML = text + "<br/>";
             result.appendChild(node);
             return;
         }
@@ -383,7 +383,7 @@ function showResult(json) { // literal for tmpOrder
         } else {
             text += " - " + getProvName(obj3);
         }
-        node.innerText = text + "<br/>";
+        node.innerHTML = text + "<br/>";
         result.appendChild(node);
         return;
     });
