@@ -1,1 +1,1 @@
-sudo nohup ./server > server.log 2>&1 &
+sudo nohup ./diplomacy > server.log 2>&1 &
